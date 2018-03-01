@@ -37,13 +37,14 @@ def scan_for_keyword(package):
         logger.debug('Processing resource %s', resource['name'])
         with requests.get(resource['url']) as result:
             for keyword in keywords:
-                if result.content.find(keyword):
+                if result.content.find(keyword) > -1:
                     return True
     return False
 
 output.writerow([
-    'Dataset',
     'Locations',
+    'Provider',
+    'Dataset',
     'HDX link'
 ])
 
@@ -58,8 +59,9 @@ while start < result_count:
         logger.debug('Processing package %s', package['name'])
         if scan_for_keyword(package):
             output.writerow([
-                package['title'],
                 ', '.join(group['display_name'] for group in package['groups']),
+                package['organization']['title'],
+                package['title'],
                 "https://data.humdata.org/dataset/{}".format(package['name']),
             ])
         time.sleep(DELAY) # give HDX a short rest
